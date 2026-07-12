@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Noches Mágicas 2026 — Hotel Faisanera Golf</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --navy:#222D63;--navy-dark:#1A2050;--navy-mid:#2A3570;
+  --blue:#5762A5;--orange:#E8533A;--salmon:#E7895E;
+  --green:#00C170;--green-bg:rgba(0,193,112,.13);
+  --red:#E8533A;--red-bg:rgba(232,83,58,.13);
+  --amber:#C4900A;--amber-bg:rgba(196,144,10,.13);
+  --white:#FFFFFF;--muted:#8090B0;--border:rgba(255,255,255,.08);
+  --golf:#2E7D32;--golf-bg:rgba(46,125,50,.13);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--navy-dark);font-family:Arial,sans-serif;color:var(--white);min-height:100vh}
+
+/* HEADER */
+.hdr{background:var(--navy);border-bottom:3px solid var(--orange);padding:16px 32px;display:flex;align-items:center;justify-content:space-between}
+.hdr-logo{font-size:10px;font-weight:700;color:var(--salmon);letter-spacing:1.5px}
+.hdr-title{font-size:19px;font-weight:700}
+.hdr-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.badge-src{font-size:10px;color:var(--muted);background:var(--navy-mid);padding:5px 14px;border-radius:20px;border:1px solid var(--border);text-align:right;line-height:1.8}
+
+/* MAIN */
+.main{padding:22px 32px;max-width:1500px;margin:0 auto}
+
+/* KPI CARDS */
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px}
+.kpi{background:var(--navy-mid);border:1px solid var(--border);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--orange)}
+.kpi.g::before{background:var(--green)}.kpi.a::before{background:var(--amber)}.kpi.b::before{background:var(--blue)}
+.kpi-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.9px;margin-bottom:4px}
+.kpi-val{font-size:24px;font-weight:700;line-height:1}
+.kpi-sub{font-size:10px;margin-top:4px;color:var(--muted)}
+.kpi-sub.up{color:var(--green)}.kpi-sub.dn{color:var(--red)}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:18px}
+.tab{padding:8px 18px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--navy-mid);color:var(--muted);transition:all .2s}
+.tab.active{background:var(--orange);color:var(--white);border-color:var(--orange)}
+.tab:hover:not(.active){border-color:var(--orange);color:var(--white)}
+
+/* FILTROS */
+.fbar{background:var(--navy-mid);border:1px solid var(--border);border-radius:12px;padding:13px 18px;display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.flbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;white-space:nowrap}
+select,input[type=date]{background:var(--navy);color:var(--white);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 10px;font-size:12px;font-family:Arial,sans-serif;cursor:pointer;outline:none}
+select:hover,input[type=date]:hover{border-color:var(--orange)}
+.fsep{width:1px;height:24px;background:var(--border)}
+.btn-r{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:5px 12px;font-size:11px;cursor:pointer}
+.btn-r:hover{border-color:var(--orange);color:var(--orange)}
+.fres{font-size:11px;color:var(--muted);margin-left:auto}
+.fres strong{color:var(--white)}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:1fr 360px;gap:16px}
+
+/* TABLA */
+.twrap{background:var(--navy-mid);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.twrap-hdr{padding:12px 16px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+table{width:100%;border-collapse:collapse}
+thead th{background:var(--navy);padding:8px 10px;font-size:9.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;text-align:center;border-bottom:1px solid var(--border)}
+thead th:first-child,thead th:nth-child(2){text-align:left}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
+tbody tr:hover{background:rgba(255,255,255,.03)}
+tbody tr.sc{opacity:.5}
+tbody td{padding:8px 10px;font-size:11.5px;text-align:center}
+tbody td:first-child{text-align:left;font-size:10.5px;color:var(--muted)}
+tbody td:nth-child(2){text-align:left}
+.top-art{color:var(--orange);font-weight:700}
+.sc-art{color:var(--muted);font-style:italic}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:16px;font-size:10px;font-weight:700;white-space:nowrap}
+.bg{background:var(--green-bg);color:var(--green)}
+.br{background:var(--red-bg);color:var(--red)}
+.ba{background:var(--amber-bg);color:var(--amber)}
+.bx{background:rgba(128,144,176,.1);color:var(--muted)}
+.pill{font-size:11px;font-weight:700;padding:1px 6px;border-radius:10px;display:inline-block}
+.pill-up{color:var(--green);background:var(--green-bg)}
+.pill-dn{color:var(--red);background:var(--red-bg)}
+.pill-z{color:var(--muted);background:rgba(128,144,176,.1)}
+.bar-wrap{display:flex;align-items:center;gap:4px;justify-content:center}
+.bar-bg{width:44px;height:4px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;flex-shrink:0}
+.bar-fill{height:100%;border-radius:3px}
+
+/* PANEL LATERAL */
+.side{display:flex;flex-direction:column;gap:13px}
+.sc-card{background:var(--navy-mid);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.sc-hdr{padding:10px 14px;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.sc-body{padding:13px}
+.ch-box{position:relative;height:185px}
+.ch-box-lg{position:relative;height:220px}
+.urg-item{display:flex;align-items:center;justify-content:space-between;padding:6px 8px;border-radius:7px;border-left:3px solid var(--red);background:var(--red-bg);font-size:11px;margin-bottom:5px}
+.snap-item{display:flex;align-items:center;justify-content:space-between;padding:6px 8px;border-radius:7px;background:rgba(255,255,255,.04);font-size:11px;margin-bottom:5px;cursor:pointer}
+.snap-item:hover{background:rgba(255,255,255,.08)}
+
+/* LOADING */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;height:300px;gap:14px}
+.spinner{width:38px;height:38px;border:3px solid rgba(255,255,255,.1);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error-msg{background:var(--red-bg);border:1px solid var(--red);border-radius:8px;padding:16px;margin:20px 0;font-size:13px}
+
+/* FOOTER */
+.footer{text-align:center;padding:16px;font-size:10px;color:var(--muted);border-top:1px solid var(--border);margin-top:24px}
+.footer a{color:var(--orange);text-decoration:none}
+
+/* VISTA SELECTOR */
+.view-selector{display:flex;gap:6px;margin-bottom:16px}
+.view-btn{padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:all .2s}
+.view-btn.active{background:var(--blue);color:var(--white);border-color:var(--blue)}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <div class="hdr-logo">THE REVENUE RUN RATE</div>
+    <div class="hdr-title">⛳ Noches Mágicas 2026 — Hotel Faisanera Golf</div>
+    <div class="hdr-sub">Tracker de ventas · 31 Jul – 16 Ago · Capacidad: 31 hab/noche · Sin histórico 2025 (primera temporada)</div>
+  </div>
+  <div class="badge-src">
+    Última actualización: <strong id="lastUpdate" style="color:var(--white)">Cargando...</strong><br>
+    <span id="dataSrc" style="color:var(--muted);font-size:10px">⏳ Conectando con Google Sheets...</span>
+  </div>
+</div>
+
+<div class="main">
+  <div id="loadingBlock" class="loading">
+    <div class="spinner"></div>
+    <span style="color:var(--muted);font-size:13px">Cargando datos desde Google Sheets...</span>
+  </div>
+
+  <div id="mainContent" style="display:none">
+
+    <!-- KPI CARDS -->
+    <div class="kpi-row">
+      <div class="kpi g">
+        <div class="kpi-lbl">Hab. confirmadas</div>
+        <div class="kpi-val" id="kHab">—</div>
+        <div class="kpi-sub" id="kHabRef">Budget: —</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">Ocupación actual</div>
+        <div class="kpi-val" id="kOcc">—</div>
+        <div class="kpi-sub" id="kOccRef">Budget: —</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">Revenue confirmado</div>
+        <div class="kpi-val" id="kRev">—</div>
+        <div class="kpi-sub" id="kRevRef">Budget: —</div>
+      </div>
+      <div class="kpi b">
+        <div class="kpi-lbl">ADR medio</div>
+        <div class="kpi-val" id="kADR">—</div>
+        <div class="kpi-sub" id="kADRRef">Budget ADR: —</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">Ratio vs La Farm</div>
+        <div class="kpi-val" id="kRatio">—</div>
+        <div class="kpi-sub" id="kRatioSub">captación del destino</div>
+      </div>
+      <div class="kpi a">
+        <div class="kpi-lbl">Noches críticas 🔴</div>
+        <div class="kpi-val" id="kAlert">—</div>
+        <div class="kpi-sub dn">bajo ritmo de reserva</div>
+      </div>
+    </div>
+
+    <!-- SELECTOR DE VISTA -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div class="view-selector">
+        <button class="view-btn active" onclick="setView('destino')" id="btnDestino">🏨 Vs La Farm (destino)</button>
+        <button class="view-btn" onclick="setView('velocidad')" id="btnVelocidad">⚡ Velocidad de reserva</button>
+        <button class="view-btn" onclick="setView('budget')" id="btnBudget">🎯 Vs Presupuesto</button>
+      </div>
+      <div style="font-size:11px;color:var(--muted)">
+        Snapshot: <select id="fSnap" onchange="applyFilters()" style="margin-left:6px"></select>
+      </div>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="fbar">
+      <div style="display:flex;align-items:center;gap:7px">
+        <span class="flbl">🎭 Tipo</span>
+        <select id="fTipo" onchange="applyFilters()">
+          <option value="todas">Todas las noches</option>
+          <option value="concierto">Solo con concierto</option>
+          <option value="sin">Sin concierto</option>
+          <option value="top">Artistas destacados</option>
+        </select>
+      </div>
+      <div class="fsep"></div>
+      <div style="display:flex;align-items:center;gap:7px">
+        <span class="flbl">🚦 Señal</span>
+        <select id="fSenal" onchange="applyFilters()">
+          <option value="todas">Todas</option>
+          <option value="verde">✅ Verde</option>
+          <option value="rojo">🔴 Rojo</option>
+          <option value="ambar">⚠️ Ámbar</option>
+        </select>
+      </div>
+      <div class="fsep"></div>
+      <div style="display:flex;align-items:center;gap:7px">
+        <span class="flbl">📆 Rango</span>
+        <input type="date" id="fIni" value="2026-07-31" min="2026-07-31" max="2026-08-16" onchange="applyFilters()">
+        <span style="color:var(--muted);font-size:11px">→</span>
+        <input type="date" id="fFin" value="2026-08-16" min="2026-07-31" max="2026-08-16" onchange="applyFilters()">
+      </div>
+      <button class="btn-r" onclick="resetFilters()">↩ Resetear</button>
+      <div class="fres">Mostrando <strong id="fCount">—</strong> noches</div>
+    </div>
+
+    <!-- GRID PRINCIPAL -->
+    <div class="grid">
+      <div class="twrap">
+        <div class="twrap-hdr">
+          <span id="tableTitle">📋 Faisanera vs La Farm — Captación del destino</span>
+          <span style="font-size:10px;color:var(--muted)">Capacidad Faisanera: 31 hab/noche</span>
+        </div>
+        <table>
+          <thead id="tableHead"></thead>
+          <tbody id="tBody"></tbody>
+        </table>
+      </div>
+
+      <!-- PANEL LATERAL -->
+      <div class="side">
+        <div class="sc-card">
+          <div class="sc-hdr">📈 Pick-up por noche <span style="font-size:9px">hab. Faisanera</span></div>
+          <div class="sc-body"><div class="ch-box-lg"><canvas id="chEv"></canvas></div></div>
+        </div>
+        <div class="sc-card">
+          <div class="sc-hdr">🔴 Noches críticas <span id="urgCount" style="color:var(--red);font-size:10px"></span></div>
+          <div class="sc-body"><div id="urgList"></div></div>
+        </div>
+        <div class="sc-card">
+          <div class="sc-hdr">🕐 Evolución snapshots <span style="font-size:9px;color:var(--muted)">total hab.</span></div>
+          <div class="sc-body">
+            <div class="ch-box"><canvas id="chHist"></canvas></div>
+            <div id="snapList" style="margin-top:10px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /mainContent -->
+</div><!-- /main -->
+
+<div class="footer">
+  <strong style="color:var(--white)">The Revenue Run Rate</strong> ·
+  Revenue &amp; Profit Management ·
+  <a href="mailto:daniel@therevenuerunrate.com">daniel@therevenuerunrate.com</a> ·
+  <a href="https://therevenuerunrate.com">therevenuerunrate.com</a><br><br>
+  <em>Dashboard conectado a Google Sheets — se actualiza automáticamente al recargar.</em>
+</div>
+
+<script>
+const PROXY_URL = "https://script.google.com/macros/s/AKfycbw9m33bS0AdobCXY_5X-AwH9Dm0IV1s-6UJz8I29jw-yHBdmOnFfbVrn-bO0Vi5_lC8Tg/exec";
+const CAP = 31;
+const ARTISTAS_TOP = new Set(['El Monaguillo','Biharpa + Ara Malikian','Víctor Manuel',
+  'Rodrigo Cuevas + DJ','Luz Casal','Los Pajarracos + Medina Azahara','Valeria Castro']);
+const SC_KEYWORDS = ['sin concierto'];
+
+let SNAPSHOTS = {};
+let activeView = 'destino';
+let chEv = null, chHist = null;
+
+// ── HELPERS ──────────────────────────────────────────────────────────
+function isSC(a){ return SC_KEYWORDS.some(k=>a.toLowerCase().includes(k)); }
+function fmtDate(s){ const p=s.split('-'); return p[2]+'/'+p[1]; }
+function fmtPct(v){ return (v*100).toFixed(1)+'%'; }
+function fmtEur(v){ return v>0?v.toFixed(2).replace('.',',')+' €':'—'; }
+function parseN(v){
+  if(!v&&v!==0) return 0;
+  return typeof v==='number'?v:parseFloat(String(v).replace(/[€,\s]/g,''))||0;
+}
+function capProy(v){ return Math.min(Math.round(parseN(v)), CAP); }
+
+// ── SEÑAL según vista activa ─────────────────────────────────────────
+function getSenal(n, view){
+  if(isSC(n.artista)) return 'grey';
+  if(view==='destino'){
+    const ratio = n.hab_lafarm>0 ? n.hab_faisanera/n.hab_lafarm : 0;
+    if(ratio>=0.5) return 'verde';
+    if(ratio>=0.25) return 'ambar';
+    return 'rojo';
+  }
+  if(view==='velocidad'){
+    const proj = capProy(n.proyeccion_cierre);
+    if(proj>=15) return 'verde';
+    if(proj>=8) return 'ambar';
+    return 'rojo';
+  }
+  if(view==='budget'){
+    const varHab = parseN(n.var_hab);
+    if(varHab>=0) return 'verde';
+    if(varHab>=-5) return 'ambar';
+    return 'rojo';
+  }
+  return 'grey';
+}
+
+// ── CARGAR DATOS ─────────────────────────────────────────────────────
+async function loadFromSheets(){
+  try {
+    const res = await fetch(PROXY_URL);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    if(!data||typeof data!=='object') throw new Error('Respuesta inesperada');
+    const snapKeys = Object.keys(data);
+    if(!snapKeys.length) throw new Error('Sin snapshots');
+    SNAPSHOTS = data;
+    const latest = snapKeys[snapKeys.length-1];
+    document.getElementById('lastUpdate').textContent = latest;
+    document.getElementById('dataSrc').innerHTML = '🟢 En directo · Google Sheets';
+    document.getElementById('dataSrc').style.color = 'var(--green)';
+    return true;
+  } catch(e){
+    document.getElementById('dataSrc').innerHTML = '🔴 Error: '+e.message;
+    document.getElementById('dataSrc').style.color = 'var(--red)';
+    document.getElementById('mainContent').innerHTML =
+      `<div class="error-msg"><strong>⚠️ No se pudieron cargar los datos.</strong><br><br>${e.message}<br><br>Recarga la página e inténtalo de nuevo.</div>`;
+    document.getElementById('mainContent').style.display='block';
+    return false;
+  }
+}
+
+// ── RENDER CABECERA TABLA según vista ────────────────────────────────
+function renderTableHead(view){
+  const head = document.getElementById('tableHead');
+  const titles = {
+    destino: `<tr>
+      <th style="width:80px">Fecha</th><th style="width:170px">Artista</th>
+      <th>Hab. Faisanera</th><th>Occ%</th>
+      <th>Hab. La Farm</th><th>Ratio destino</th><th>Señal captación</th>
+    </tr>`,
+    velocidad: `<tr>
+      <th style="width:80px">Fecha</th><th style="width:170px">Artista</th>
+      <th>Hab. hoy</th><th>Occ%</th>
+      <th>Días hasta noche</th><th>Velocidad (hab/día)</th><th>Proyección cierre</th>
+    </tr>`,
+    budget: `<tr>
+      <th style="width:80px">Fecha</th><th style="width:170px">Artista</th>
+      <th>Hab. real</th><th>Hab. budget</th><th>Δ Hab.</th>
+      <th>ADR real vs budget</th><th>Revenue real vs budget</th>
+    </tr>`
+  };
+  head.innerHTML = titles[view];
+
+  const titles2 = {
+    destino: '🏨 Faisanera vs La Farm — Captación del destino',
+    velocidad: '⚡ Índice de velocidad de reserva — Proyección al cierre',
+    budget: '🎯 Real vs Presupuesto — KPIs diarios',
+  };
+  document.getElementById('tableTitle').textContent = titles2[view];
+}
+
+// ── RENDER TABLA ────────────────────────────────────────────────────
+function renderTable(data, view){
+  const tb = document.getElementById('tBody');
+  tb.innerHTML='';
+  data.forEach(n=>{
+    const sc    = isSC(n.artista);
+    const top   = ARTISTAS_TOP.has(n.artista);
+    const senal = getSenal(n, view);
+    const bCls  = senal==='verde'?'bg':senal==='rojo'?'br':senal==='ambar'?'ba':'bx';
+    const bIco  = senal==='verde'?'✅':senal==='rojo'?'🔴':senal==='ambar'?'⚠️':'—';
+    const hab   = parseN(n.hab_faisanera);
+    const occ   = hab/CAP;
+    const bc    = occ>=.75?'var(--green)':occ>=.4?'var(--amber)':'var(--red)';
+    const tr    = document.createElement('tr');
+    if(sc) tr.classList.add('sc');
+
+    const fechaTd = `<td>${fmtDate(n.fecha)} <span style="font-size:9px">${n.dsem||''}</span></td>`;
+    const artistaTd = `<td class="${top?'top-art':sc?'sc-art':''}">${n.artista}</td>`;
+    const habTd = `<td><div class="bar-wrap">
+      <span style="color:${bc};font-weight:700;font-size:12px;min-width:14px">${hab}</span>
+      <div class="bar-bg"><div class="bar-fill" style="width:${Math.min(occ*100,100)}%;background:${bc}"></div></div>
+      <span style="font-size:10px;color:var(--muted)">${Math.round(occ*100)}%</span>
+    </div></td>`;
+    const occTd = `<td style="font-size:10px;color:var(--muted)">${fmtPct(occ)}</td>`;
+
+    let specific = '';
+    if(view==='destino'){
+      const lfarm  = parseN(n.hab_lafarm);
+      const ratio  = parseN(n.ratio_destino);
+      const rPct   = (ratio*100).toFixed(0)+'%';
+      const rColor = ratio>=.5?'var(--green)':ratio>=.25?'var(--amber)':'var(--red)';
+      specific = `
+        <td style="color:var(--muted)">${lfarm}</td>
+        <td><span style="font-weight:700;color:${rColor};font-size:13px">${lfarm>0?rPct:'—'}</span></td>
+        <td><span class="badge ${bCls}">${bIco} ${lfarm>0?(senal==='verde'?'Buena captación':senal==='ambar'?'Captación media':'Baja captación'):'Sin ref.'}</span></td>`;
+    } else if(view==='velocidad'){
+      const dias  = parseN(n.dias_hasta_evento);
+      const vel   = parseN(n.velocidad_res);
+      const proj  = capProy(n.proyeccion_cierre);
+      const pOcc  = proj/CAP;
+      const pColor= pOcc>=.5?'var(--green)':pOcc>=.25?'var(--amber)':'var(--red)';
+      const projLabel = proj>=CAP ? CAP+' hab (100% — inventario completo)' :
+                        proj>0 ? proj+' hab ('+Math.round(pOcc*100)+'%)' : '—';
+      specific = `
+        <td style="color:var(--muted)">${dias>0?dias+' días':'—'}</td>
+        <td style="color:var(--muted)">${vel>0?vel.toFixed(2)+' hab/d':'—'}</td>
+        <td><span style="font-weight:700;color:${pColor};font-size:12px">${projLabel}</span>
+          <span class="badge ${bCls}" style="margin-left:4px">${bIco}</span></td>`;
+    } else if(view==='budget'){
+      const varH  = parseN(n.var_hab);
+      const varA  = parseN(n.var_adr);
+      const varR  = parseN(n.var_rev);
+      const budH  = parseN(n.hab_budget);
+      const budA  = parseN(n.adr_budget);
+      const adrReal = parseN(n.adr_faisanera);
+      const revReal = parseN(n.rev_faisanera);
+      const budR  = parseN(n.rev_budget);
+      const hCls  = varH>=0?'pill-up':varH>=-5?'pill-z':'pill-dn';
+      specific = `
+        <td style="color:var(--muted)">${budH}</td>
+        <td><span class="pill ${hCls}">${varH>=0?'+':''}${varH}</span></td>
+        <td style="font-size:11px">
+          <span style="color:${varA>=0?'var(--green)':'var(--red)'}">${adrReal>0?fmtEur(adrReal):'—'}</span>
+          <span style="color:var(--muted)"> / ${fmtEur(budA)}</span>
+        </td>
+        <td style="font-size:11px">
+          <span style="color:${varR>=0?'var(--green)':'var(--red)'}">${revReal>0?fmtEur(revReal):'—'}</span>
+          <span style="color:var(--muted)"> / ${fmtEur(budR)}</span>
+        </td>`;
+    }
+
+    tr.innerHTML = fechaTd + artistaTd + habTd + (view!=='budget'?occTd:'') + specific;
+    tb.appendChild(tr);
+  });
+}
+
+// ── UPDATE KPIs ──────────────────────────────────────────────────────
+function updateKPIs(data){
+  const totHab   = data.reduce((s,n)=>s+parseN(n.hab_faisanera),0);
+  const totBudH  = data.reduce((s,n)=>s+parseN(n.hab_budget),0);
+  const totRev   = data.reduce((s,n)=>s+parseN(n.rev_faisanera),0);
+  const totBudR  = data.reduce((s,n)=>s+parseN(n.rev_budget),0);
+  const totBudA  = data.reduce((s,n)=>s+parseN(n.adr_budget),0);
+  const totLF    = data.reduce((s,n)=>s+parseN(n.hab_lafarm),0);
+  const cap      = data.length*CAP;
+  const adr      = totHab>0?totRev/totHab:0;
+  const budADR   = totBudH>0?totBudR/totBudH:0;
+  const ratio    = totLF>0?totHab/totLF:0;
+  const alerts   = data.filter(n=>getSenal(n,activeView)==='rojo'&&!isSC(n.artista)).length;
+
+  document.getElementById('kHab').textContent = totHab;
+  document.getElementById('kHabRef').textContent = 'Budget: '+totBudH+' ('+(totBudH>0?((totHab/totBudH)*100).toFixed(0):'0')+'%)';
+  document.getElementById('kOcc').textContent = cap>0?fmtPct(totHab/cap):'0%';
+  document.getElementById('kOccRef').textContent = 'Budget occ: '+fmtPct(cap>0?totBudH/cap:0);
+  document.getElementById('kRev').textContent = totRev>0?(totRev/1000).toFixed(1)+'k€':'0€';
+  document.getElementById('kRevRef').textContent = 'Budget: '+(totBudR/1000).toFixed(1)+'k€';
+  document.getElementById('kADR').textContent = adr>0?adr.toFixed(0)+'€':'—';
+  document.getElementById('kADRRef').textContent = 'Budget ADR: '+budADR.toFixed(0)+'€';
+  document.getElementById('kRatio').textContent = totLF>0?(ratio*100).toFixed(0)+'%':'—';
+  document.getElementById('kRatioSub').textContent = 'La Farm: '+totLF+' hab confirmadas';
+  document.getElementById('kAlert').textContent = alerts;
+
+  // Urgentes
+  const urg = data.filter(n=>getSenal(n,activeView)==='rojo'&&!isSC(n.artista))
+    .sort((a,b)=>parseN(a.hab_faisanera)-parseN(b.hab_faisanera));
+  const ul = document.getElementById('urgList');
+  ul.innerHTML='';
+  urg.slice(0,5).forEach(n=>{
+    ul.innerHTML+=`<div class="urg-item">
+      <div>
+        <div style="font-weight:700;font-size:11px">${n.artista}</div>
+        <div style="font-size:10px;color:var(--muted)">${fmtDate(n.fecha)} (${n.dsem||''})</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-weight:700;color:var(--red)">${parseN(n.hab_faisanera)} hab</div>
+        <div style="font-size:10px;color:var(--muted)">${(parseN(n.ratio_destino)*100).toFixed(0)}% del destino</div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('urgCount').textContent = urg.length+' noches';
+}
+
+// ── GRÁFICOS ─────────────────────────────────────────────────────────
+function renderChartEv(data){
+  if(chEv) chEv.destroy();
+  const ds = [{
+    label:'Hab. Faisanera',
+    data:data.map(n=>parseN(n.hab_faisanera)),
+    backgroundColor:'rgba(232,83,58,.88)',borderRadius:3,borderSkipped:false
+  }];
+  if(activeView==='destino'){
+    ds.push({label:'Hab. La Farm',data:data.map(n=>parseN(n.hab_lafarm)),
+      backgroundColor:'rgba(128,144,176,.25)',borderRadius:3,borderSkipped:false});
+  }
+  if(activeView==='budget'){
+    ds.push({label:'Budget',data:data.map(n=>parseN(n.hab_budget)),
+      type:'line',tension:.3,borderColor:'rgba(255,255,255,.4)',
+      backgroundColor:'transparent',pointBackgroundColor:'rgba(255,255,255,.5)',
+      pointRadius:3,borderWidth:1.5});
+  }
+  if(activeView==='velocidad'){
+    ds.push({label:'Proyección cierre',data:data.map(n=>capProy(n.proyeccion_cierre)),
+      type:'line',tension:.3,borderColor:'rgba(0,193,112,.6)',
+      backgroundColor:'rgba(0,193,112,.08)',pointBackgroundColor:'rgba(0,193,112,.8)',
+      pointRadius:3,borderWidth:1.5});
+  }
+  chEv = new Chart(document.getElementById('chEv').getContext('2d'),{
+    type:'bar',data:{labels:data.map(n=>fmtDate(n.fecha)),datasets:ds},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#8090B0',font:{size:9,family:'Arial'},boxWidth:10,padding:7}},
+        tooltip:{backgroundColor:'#1A2050',borderColor:'rgba(255,255,255,.1)',borderWidth:1,
+          titleColor:'#fff',bodyColor:'#8090B0'}},
+      scales:{
+        x:{ticks:{color:'#8090B0',font:{size:9},maxRotation:45},grid:{color:'rgba(255,255,255,.05)'}},
+        y:{ticks:{color:'#8090B0',font:{size:9}},grid:{color:'rgba(255,255,255,.05)'},min:0,max:31}
+      }}
+  });
+}
+
+function renderHistorico(){
+  const keys   = Object.keys(SNAPSHOTS);
+  const totals = keys.map(k=>SNAPSHOTS[k].noches.reduce((s,n)=>s+parseN(n.hab_faisanera),0));
+  if(chHist) chHist.destroy();
+  chHist = new Chart(document.getElementById('chHist').getContext('2d'),{
+    type:'line',data:{labels:keys,datasets:[{
+      label:'Total hab.',data:totals,
+      borderColor:'#E8533A',backgroundColor:'rgba(232,83,58,.1)',
+      tension:.4,pointBackgroundColor:'#E8533A',pointRadius:5,fill:true
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},
+        tooltip:{backgroundColor:'#1A2050',titleColor:'#fff',bodyColor:'#8090B0',
+          callbacks:{label:c=>' '+c.parsed.y+' hab confirmadas'}}},
+      scales:{
+        x:{ticks:{color:'#8090B0',font:{size:9}},grid:{color:'rgba(255,255,255,.05)'}},
+        y:{ticks:{color:'#8090B0',font:{size:9}},grid:{color:'rgba(255,255,255,.05)'},min:0}
+      }}
+  });
+
+  const sl=document.getElementById('snapList');
+  sl.innerHTML='';
+  keys.forEach((k,i)=>{
+    const tot=totals[i],prev=i>0?totals[i-1]:null,d=prev!==null?tot-prev:null;
+    sl.innerHTML+=`<div class="snap-item" onclick="document.getElementById('fSnap').value='${k}';applyFilters()">
+      <span style="color:var(--muted)">${k}</span>
+      <span style="font-weight:700">${tot} hab</span>
+      <span style="font-size:10px;color:${d===null?'var(--muted)':d>=0?'var(--green)':'var(--red)'}">${d===null?'Base':(d>=0?'+':'')+d}</span>
+    </div>`;
+  });
+
+  const sel=document.getElementById('fSnap');
+  sel.innerHTML='';
+  keys.forEach(k=>{
+    sel.innerHTML+=`<option value="${k}"${k===keys[keys.length-1]?' selected':''}>${k}${k===keys[keys.length-1]?' (actual)':''}</option>`;
+  });
+}
+
+// ── VISTA ─────────────────────────────────────────────────────────────
+function setView(v){
+  activeView=v;
+  ['destino','velocidad','budget'].forEach(x=>{
+    document.getElementById('btn'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('active',x===v);
+  });
+  renderTableHead(v);
+  applyFilters();
+}
+
+// ── FILTROS ───────────────────────────────────────────────────────────
+function applyFilters(){
+  const snap=document.getElementById('fSnap').value;
+  const tipo=document.getElementById('fTipo').value;
+  const sen =document.getElementById('fSenal').value;
+  const ini =document.getElementById('fIni').value;
+  const fin =document.getElementById('fFin').value;
+  document.getElementById('lastUpdate').textContent=snap;
+
+  const noches=(SNAPSHOTS[snap]||{noches:[]}).noches;
+  const filtered=noches.filter(n=>{
+    if(!n.fecha||n.fecha<ini||n.fecha>fin) return false;
+    if(tipo==='concierto'&&isSC(n.artista)) return false;
+    if(tipo==='sin'&&!isSC(n.artista)) return false;
+    if(tipo==='top'&&!ARTISTAS_TOP.has(n.artista)) return false;
+    const s=getSenal(n,activeView);
+    if(sen==='verde'&&s!=='verde') return false;
+    if(sen==='rojo'&&s!=='rojo') return false;
+    if(sen==='ambar'&&s!=='ambar') return false;
+    return true;
+  });
+
+  document.getElementById('fCount').textContent=filtered.length;
+  renderTable(filtered,activeView);
+  renderChartEv(filtered);
+  updateKPIs(filtered);
+}
+
+function resetFilters(){
+  document.getElementById('fTipo').value='todas';
+  document.getElementById('fSenal').value='todas';
+  document.getElementById('fIni').value='2026-07-31';
+  document.getElementById('fFin').value='2026-08-16';
+  const keys=Object.keys(SNAPSHOTS);
+  if(keys.length) document.getElementById('fSnap').value=keys[keys.length-1];
+  applyFilters();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────
+window.addEventListener('load',async()=>{
+  const ok=await loadFromSheets();
+  document.getElementById('loadingBlock').style.display='none';
+  document.getElementById('mainContent').style.display='block';
+  if(ok){
+    renderTableHead('destino');
+    renderHistorico();
+    applyFilters();
+  }
+});
+</script>
+</body>
+</html>
